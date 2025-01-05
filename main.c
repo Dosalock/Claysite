@@ -1,3 +1,4 @@
+
 #define CLAY_EXTEND_CONFIG_RECTANGLE                                           \
 	Clay_String link;                                                          \
 	bool cursorPointer;
@@ -10,7 +11,7 @@ double window_width = 1024, window_height = 768;
 float animationLerpValue       = -1.0f;
 float modelPageOneZRotation    = 0;
 uint32_t ACTIVE_RENDERER_INDEX = 0;
-bool debugModeEnabled = false;
+bool debugModeEnabled          = false;
 
 typedef struct
 {
@@ -25,18 +26,14 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 {
 	Clay_BeginLayout( );
 	// MAKE UI IN HERE
-
-	Clay_SetLayoutDimensions(
-	  ( Clay_Dimensions ) { window_height, window_width } );
-
 	CLAY( CLAY_ID( "outer_container" ),
 		  CLAY_RECTANGLE( {
 			.color = { 43, 41, 51, 255 }
     } ),
 		  CLAY_LAYOUT(
 			{ .layoutDirection = CLAY_TOP_TO_BOTTOM,
-			  .sizing  = { .width = window_width, .height = window_height },
-			  .padding = { 16, 16 },
+			  .sizing   = { .width = window_width, .height = window_height },
+			  .padding  = { 16, 16 },
 			  .childGap = 8 } ) )
 	{
 		// Children
@@ -54,10 +51,10 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 			CLAY( CLAY_ID( "button_container" ),
 				  CLAY_LAYOUT( {
 					.layoutDirection = CLAY_LEFT_TO_RIGHT,
-					.sizing          = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW() },
-					.childAlignment  = { 0, CLAY_ALIGN_Y_CENTER },
-					.padding         = { 16, 32 },
-					.childGap        = 8
+					.sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) },
+					.childAlignment = {                   0, CLAY_ALIGN_Y_CENTER },
+					.padding        = {                  16,                  32 },
+					.childGap       = 8
             } ) )
 			{
 				CLAY_TEXT( CLAY_STRING( "BASED C" ),
@@ -75,31 +72,30 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 			}
 		}
 
-		CLAY(
-			CLAY_ID("main_content"),
-			CLAY_LAYOUT({
-				.sizing = {CLAY_SIZING_GROW(), CLAY_SIZING_GROW()},
-				})
-		){
-			CLAY(
-				CLAY_ID("main_background"),
-				CLAY_RECTANGLE({
-					.color = {155 * debugModeEnabled, 128, 0 , 255},
-					.cornerRadius = {8, 8, 8, 8},
-				}),
-				CLAY_LAYOUT({
-				.sizing = {CLAY_SIZING_GROW(), CLAY_SIZING_GROW()},
-				})
-			){}
+		CLAY( CLAY_ID( "main_content" ),
+			  CLAY_LAYOUT( {
+				.sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) },
+        } ) )
+		{
+			CLAY( CLAY_ID( "main_background" ),
+				  CLAY_RECTANGLE( {
+					.color        = { 155 * debugModeEnabled, 128, 0, 255 },
+					.cornerRadius = {                      8,   8, 8,   8 },
+            } ),
+				  CLAY_LAYOUT( {
+					.sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) },
+				  } ) )
+			{
+			}
 		}
 	}
-
+	
 	return Clay_EndLayout( );
 }
 
 
+CLAY_WASM_EXPORT( "UpdateDrawFrame" )
 
-CLAY_WASM_EXPORT( "UpdateDrawFrame" ) 
 Clay_RenderCommandArray UpdateDrawFrame ( float width,
 										  float height,
 										  float mouseWheelX,
@@ -125,16 +121,20 @@ Clay_RenderCommandArray UpdateDrawFrame ( float width,
 		}
 	}
 
-	
-	Clay_SetPointerState((Clay_Vector2) {mousePositionX, mousePositionY}, isMouseDown || isTouchDown);
+
+	Clay_SetPointerState( ( Clay_Vector2 ) { mousePositionX, mousePositionY },
+						  isMouseDown || isTouchDown );
+
+	Clay_UpdateScrollContainers(true, (Clay_Vector2) { mouseWheelX, mouseWheelY }, deltaTime);
 
 	if ( dKeyPressedThisFrame )
 	{
 		debugModeEnabled = !debugModeEnabled;
 
-		Clay_SetDebugModeEnabled(debugModeEnabled);
+		Clay_SetDebugModeEnabled( debugModeEnabled );
 	}
-	Clay__debugViewHighlightColor = (Clay_Color) {105,210,231, 120};
+	Clay__debugViewHighlightColor = ( Clay_Color ) { 105, 210, 231, 120 };
+
 
 	if ( !isMouseDown )
 	{

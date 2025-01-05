@@ -48,6 +48,7 @@
             position: absolute;
             box-sizing: border-box;
             -webkit-backface-visibility: hidden;
+            pointer-events: none;
         }
 
         a {
@@ -60,9 +61,7 @@
             white-space: pre;
         }
 
-        [id='2067877626'] > * {
-            pointer-events: none !important;
-        }
+        
     </style>
 </head>
 <script type="module">
@@ -157,6 +156,10 @@
             { name: 'sourceURL', ...stringDefinition }
         ]
     };
+    let scrollConfigDefinition = { name: 'text', type: 'struct', members: [
+        { name: 'horizontal', type: 'bool' },
+        { name: 'vertical', type: 'bool' },
+    ]};
     let customConfigDefinition = {
         name: 'custom', type: 'struct', members: [
             { name: 'customData', type: 'uint32_t' },
@@ -200,6 +203,7 @@
             case 'uint32_t': return 4;
             case 'uint16_t': return 2;
             case 'uint8_t': return 1;
+            case 'bool': return 1;
             default: {
                 throw "Unimplemented C data type " + definition.type
             }
@@ -227,6 +231,7 @@
             case 'uint32_t': return { value: memoryDataView.getUint32(address, true), __size: 4 };
             case 'uint16_t': return { value: memoryDataView.getUint16(address, true), __size: 2 };
             case 'uint8_t': return { value: memoryDataView.getUint16(address, true), __size: 1 };
+            case 'bool': return { value: memoryDataView.getUint16(address, true), __size: 1 };
             default: {
                 throw "Unimplemented C data type " + definition.type
             }
@@ -255,8 +260,10 @@
         window.mouseWheelXThisFrame = 0;
         window.mouseWheelYThisFrame = 0;
         window.touchDown = false;
+        window.arrowKeyDownPressedThisFrame = false;
+        window.arrowKeyUpPressedThisFrame = false;
         let zeroTimeout = null;
-        addEventListener("wheel", (event) => {
+        document.addEventListener("wheel", (event) => {
             window.mouseWheelXThisFrame = event.deltaX * -0.1;
             window.mouseWheelYThisFrame = event.deltaY * -0.1;
             clearTimeout(zeroTimeout);
@@ -326,7 +333,7 @@
         let arenaAddress = scratchSpaceAddress;
         window.instance = instance;
         createMainArena(arenaAddress, heapSpaceAddress);
-        instance.exports.Clay_Initialize(arenaAddress);
+        instance.exports.Clay_Initialize(arenaAddress, instance.exports.__heap_base.value);
         renderCommandSize = getStructTotalSize(renderCommandDefinition);
         renderLoop();
     }
@@ -341,15 +348,17 @@
     }
 
     function renderLoopHTML() {
-        let capacity = memoryDataView.getUint32(scratchSpaceAddress, true);
-        let length = memoryDataView.getUint32(scratchSpaceAddress + 4, true);
+        let capacity = memoryDataView.getInt32(scratchSpaceAddress, true);
+        let length = memoryDataView.getInt32(scratchSpaceAddress + 4, true);
         let arrayOffset = memoryDataView.getUint32(scratchSpaceAddress + 8, true);
         let scissorStack = [{ nextAllocation: { x: 0, y: 0 }, element: htmlRoot, nextElementIndex: 0 }];
+        let previousId = 0;
         for (let i = 0; i < length; i++, arrayOffset += renderCommandSize) {
             let entireRenderCommandMemory = new Uint32Array(memoryDataView.buffer.slice(arrayOffset, arrayOffset + renderCommandSize));
             let renderCommand = readStructAtAddress(arrayOffset, renderCommandDefinition);
             let parentElement = scissorStack[scissorStack.length - 1];
             let element = null;
+            let isMultiConfigElement = previousId === renderCommand.id.value;
             if (!elementCache[renderCommand.id.value]) {
                 let elementType = 'div';
                 switch (renderCommand.commandType.value) {
@@ -359,7 +368,9 @@
                         }
                         break;
                     }
-                    case CLAY_RENDER_COMMAND_TYPE_IMAGE: { elementType = 'img'; break; }
+                    case CLAY_RENDER_COMMAND_TYPE_IMAGE: {
+                        elementType = 'img'; break;
+                    }
                     default: break;
                 }
                 element = document.createElement(elementType);
@@ -378,18 +389,22 @@
 
             let elementData = elementCache[renderCommand.id.value];
             element = elementData.element;
-            if (Array.prototype.indexOf.call(parentElement.element.children, element) !== parentElement.nextElementIndex) {
-                if (parentElement.nextElementIndex === 0 || !parentElement.element.childNodes[parentElement.nextElementIndex - 1]) {
+            if (!isMultiConfigElement && Array.prototype.indexOf.call(parentElement.element.children, element) !== parentElement.nextElementIndex) {
+                if (parentElement.nextElementIndex === 0) {
                     parentElement.element.insertAdjacentElement('afterbegin', element);
                 } else {
-                    parentElement.element.childNodes[parentElement.nextElementIndex - 1].insertAdjacentElement('afterend', element);
+                    parentElement.element.childNodes[Math.min(parentElement.nextElementIndex - 1, parentElement.element.childNodes.length - 1)].insertAdjacentElement('afterend', element);
                 }
             }
 
             elementData.exists = true;
             // Don't get me started. Cheaper to compare the render command memory than to update HTML elements
-            let dirty = MemoryIsDifferent(elementData.previousMemoryCommand, entireRenderCommandMemory, renderCommandSize);
-            parentElement.nextElementIndex++;
+            let dirty = MemoryIsDifferent(elementData.previousMemoryCommand, entireRenderCommandMemory, renderCommandSize) && !isMultiConfigElement;
+            if (!isMultiConfigElement) {
+                parentElement.nextElementIndex++;
+            }
+
+            previousId = renderCommand.id.value;
 
             elementData.previousMemoryCommand = entireRenderCommandMemory;
             let offsetX = scissorStack.length > 0 ? scissorStack[scissorStack.length - 1].nextAllocation.x : 0;
@@ -400,7 +415,8 @@
                 element.style.height = Math.round(renderCommand.boundingBox.height.value) + 'px';
             }
 
-            switch(renderCommand.commandType.value) {
+            // note: commandType is packed to uint8_t and has 3 garbage bytes of padding
+            switch(renderCommand.commandType.value & 0xff) {
                 case (CLAY_RENDER_COMMAND_TYPE_NONE): {
                     break;
                 }
@@ -500,6 +516,15 @@
                 }
                 case (CLAY_RENDER_COMMAND_TYPE_SCISSOR_START): {
                     scissorStack.push({ nextAllocation: { x: renderCommand.boundingBox.x.value, y: renderCommand.boundingBox.y.value }, element, nextElementIndex: 0 });
+                    let config = readStructAtAddress(renderCommand.config.value, scrollConfigDefinition);
+                    if (config.horizontal.value) {
+                        element.style.overflowX = 'scroll';
+                        element.style.pointerEvents = 'auto';
+                    }
+                    if (config.vertical.value) {
+                        element.style.overflowY = 'scroll';
+                        element.style.pointerEvents = 'auto';
+                    }
                     break;
                 }
                 case (CLAY_RENDER_COMMAND_TYPE_SCISSOR_END): {
@@ -532,10 +557,36 @@
     function renderLoop(currentTime) {
         const elapsed = currentTime - previousFrameTime;
         previousFrameTime = currentTime;
-        instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, window.mouseWheelXThisFrame, window.mouseWheelYThisFrame, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, window.arrowKeyDownPressedThisFrame, window.arrowKeyUpPressedThisFrame, window.dKeyPressedThisFrame, elapsed / 1000);
-        renderLoopHTML();
+        let activeRendererIndex = memoryDataView.getUint32(instance.exports.ACTIVE_RENDERER_INDEX.value, true);
+        if (activeRendererIndex === 0) {
+            instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, 0, 0, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, 0, 0, window.dKeyPressedThisFrame, elapsed / 1000);
+        } else {
+            instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, window.mouseWheelXThisFrame, window.mouseWheelYThisFrame, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, window.arrowKeyDownPressedThisFrame, window.arrowKeyUpPressedThisFrame, window.dKeyPressedThisFrame, elapsed / 1000);
+        }
+        let rendererChanged = activeRendererIndex !== window.previousActiveRendererIndex;
+        switch (activeRendererIndex) {
+            case 0: {
+                renderLoopHTML();
+                if (rendererChanged) {
+                    window.htmlRoot.style.display = 'block';
+                    window.canvasRoot.style.display = 'none';
+                }
+                break;
+            }
+            case 1: {
+                renderLoopCanvas();
+                if (rendererChanged) {
+                    window.htmlRoot.style.display = 'none';
+                    window.canvasRoot.style.display = 'block';
+                }
+                break;
+            }
+        }
+        window.previousActiveRendererIndex = activeRendererIndex;
         requestAnimationFrame(renderLoop);
-        window.mouseDown = false;
+        window.mouseDownThisFrame = false;
+        window.arrowKeyUpPressedThisFrame = false;
+        window.arrowKeyDownPressedThisFrame = false;
         window.dKeyPressedThisFrame = false;
     }
     init();

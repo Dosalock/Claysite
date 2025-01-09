@@ -7,6 +7,12 @@
 #define CLAY_IMPLEMENTATION
 #include "clay.h"
 
+const Clay_Color COLOR_BACKDROP   = ( Clay_Color ) { 15, 0, 40, 255 };
+const Clay_Color COLOR_BACKGROUND = ( Clay_Color ) { 20, 0, 50, 255 };
+const Clay_Color COLOR_ITEM       = ( Clay_Color ) { 60, 9, 108, 255 };
+const Clay_Color COLOR_TEXT_1     = ( Clay_Color ) { 255, 158, 0, 255 };
+const Clay_Sizing C_EXPAND =
+  ( Clay_Sizing ) { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) };
 double window_width = 1024, window_height = 768;
 float animationLerpValue       = -1.0f;
 float modelPageOneZRotation    = 0;
@@ -28,7 +34,7 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 	// MAKE UI IN HERE
 	CLAY( CLAY_ID( "outer_container" ),
 		  CLAY_RECTANGLE( {
-			.color = { 43, 41, 51, 255 }
+			.color = COLOR_BACKDROP
     } ),
 		  CLAY_LAYOUT(
 			{ .layoutDirection = CLAY_TOP_TO_BOTTOM,
@@ -40,8 +46,8 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 
 		CLAY( CLAY_ID( "header_bar" ),
 			  CLAY_RECTANGLE( {
-				.color        = { 90, 90, 90, 255 },
-				.cornerRadius = {  8,  8,  8,   8 }
+				.color        = COLOR_BACKGROUND,
+				.cornerRadius = { 8, 8, 8, 8 }
         } ),
 			  CLAY_LAYOUT( { .sizing = {
 							   .width  = CLAY_SIZING_GROW( ),
@@ -54,42 +60,98 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 					.sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) },
 					.childAlignment = {                   0, CLAY_ALIGN_Y_CENTER },
 					.padding        = {                  16,                  32 },
-					.childGap       = 8
+					.childGap       = 8,
             } ) )
 			{
-				CLAY_TEXT( CLAY_STRING( "BASED C" ),
-						   CLAY_TEXT_CONFIG( {
-							 .fontSize  = 24,
-							 .fontId    = 2,
-							 .textColor = { 200, 200, 200, 255 }
-                } ) );
-				CLAY_TEXT( CLAY_STRING( "PLSHEADER2" ),
-						   CLAY_TEXT_CONFIG( {
-							 .fontSize  = 24,
-							 .fontId    = 2,
-							 .textColor = { 200, 200, 200, 255 }
-                } ) );
+				//Clay_Dimensions s = Clay__MeasureText("BASED C"}  );
+				CLAY(
+					CLAY_ID("button_object"),
+				  	CLAY_RECTANGLE( 
+					{
+						.color = COLOR_ITEM,
+
+					} 
+					),
+				  	CLAY_LAYOUT( 
+					{ 
+						.sizing = C_EXPAND,
+						.childAlignment = { 0, CLAY_ALIGN_Y_CENTER },
+					}
+					) )
+				{
+						
+					CLAY_TEXT( CLAY_STRING( "BASED C" ),
+								CLAY_TEXT_CONFIG( {
+									.fontSize  = 24,
+									.fontId    = 2,
+									.textColor = COLOR_TEXT_1,
+								} ) );
+				
+				}
+				CLAY( CLAY_RECTANGLE( {
+				  .color = COLOR_ITEM,
+
+				} ) )
+				{
+					CLAY_TEXT(
+					  CLAY_STRING( "PLSHEADER2" ),
+					  CLAY_TEXT_CONFIG( { .fontSize  = 24,
+										  .fontId    = 2,
+										  .textColor = COLOR_TEXT_1 } ) );
+				}
 			}
 		}
 
 		CLAY( CLAY_ID( "main_content" ),
 			  CLAY_LAYOUT( {
-				.sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) },
+				.sizing   = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) },
+				.childGap = 8,
         } ) )
 		{
+			CLAY( CLAY_ID( "left_sidebar" ),
+				  CLAY_RECTANGLE( {
+					.color        = COLOR_BACKGROUND,
+					.cornerRadius = { 8, 8, 8, 8 },
+            } ),
+				  CLAY_LAYOUT( { .sizing = { CLAY_SIZING_FIXED( 200 ),
+											 CLAY_SIZING_GROW( ) } } ) )
+			{
+			}
 			CLAY( CLAY_ID( "main_background" ),
 				  CLAY_RECTANGLE( {
-					.color        = { 155 * debugModeEnabled, 128, 0, 255 },
-					.cornerRadius = {                      8,   8, 8,   8 },
+					.color        = COLOR_BACKGROUND,
+					.cornerRadius = { 8, 8, 8, 8 },
             } ),
 				  CLAY_LAYOUT( {
 					.sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) },
 				  } ) )
 			{
+				CLAY(
+				  CLAY_ID( "set_information_container" ),
+				  CLAY_LAYOUT( {
+					.layoutDirection = CLAY_TOP_TO_BOTTOM,
+					.sizing = { CLAY_SIZING_FIXED( 400 ), CLAY_SIZING_GROW( ) },
+					.childGap = 16,
+					.padding  = {                       16,                  16 }
+                } ) )
+				{
+					CLAY( CLAY_ID( "set_information_bar" ),
+						  CLAY_RECTANGLE( {
+							.color        = COLOR_ITEM,
+							.cornerRadius = { 8, 8, 8, 8 },
+                    } ),
+						  CLAY_LAYOUT( {
+							.sizing          = { CLAY_SIZING_GROW( ),
+												 CLAY_SIZING_FIXED( 50 ) },
+							.layoutDirection = CLAY_TOP_TO_BOTTOM,
+						  } ) )
+					{
+					}
+				}
 			}
 		}
 	}
-	
+
 	return Clay_EndLayout( );
 }
 
@@ -125,7 +187,9 @@ Clay_RenderCommandArray UpdateDrawFrame ( float width,
 	Clay_SetPointerState( ( Clay_Vector2 ) { mousePositionX, mousePositionY },
 						  isMouseDown || isTouchDown );
 
-	Clay_UpdateScrollContainers(true, (Clay_Vector2) { mouseWheelX, mouseWheelY }, deltaTime);
+	Clay_UpdateScrollContainers( true,
+								 ( Clay_Vector2 ) { mouseWheelX, mouseWheelY },
+								 deltaTime );
 
 	if ( dKeyPressedThisFrame )
 	{

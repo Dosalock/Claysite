@@ -52,13 +52,17 @@
         }
 
         a {
-            cursor: pointer;
+            cursor: pointer !important;
             pointer-events: all;
         }
 
         .text {
             pointer-events: all;
             white-space: pre;
+        }
+
+        [id='2067877626'] > * {
+            pointer-events: none !important;
         }
 
         
@@ -229,6 +233,7 @@
             }
             case 'float': return { value: memoryDataView.getFloat32(address, true), __size: 4 };
             case 'uint32_t': return { value: memoryDataView.getUint32(address, true), __size: 4 };
+            case 'int32_t': return { value: memoryDataView.getUint32(address, true), __size: 4 };
             case 'uint16_t': return { value: memoryDataView.getUint16(address, true), __size: 2 };
             case 'uint8_t': return { value: memoryDataView.getUint16(address, true), __size: 1 };
             case 'bool': return { value: memoryDataView.getUint16(address, true), __size: 1 };
@@ -273,11 +278,20 @@
             }, 10);
         });
 
-        function handleTouch(event) {
+        function handleTouch (event) {
             if (event.touches.length === 1) {
                 window.touchDown = true;
-                window.mousePositionXThisFrame = event.changedTouches[0].pageX;
-                window.mousePositionYThisFrame = event.changedTouches[0].pageY;
+                let target = event.target;
+                let scrollTop = 0;
+                let scrollLeft = 0;
+                let activeRendererIndex = memoryDataView.getUint32(instance.exports.ACTIVE_RENDERER_INDEX.value, true);
+                while (activeRendererIndex !== 1 && target) {
+                    scrollLeft += target.scrollLeft;
+                    scrollTop += target.scrollTop;
+                    target = target.parentElement;
+                }
+                window.mousePositionXThisFrame = event.changedTouches[0].pageX + scrollLeft;
+                window.mousePositionYThisFrame = event.changedTouches[0].pageY + scrollTop;
             }
         }
 
@@ -290,12 +304,26 @@
         })
 
         document.addEventListener("mousemove", (event) => {
-            window.mousePositionXThisFrame = event.x;
-            window.mousePositionYThisFrame = event.y;
+            let target = event.target;
+            let scrollTop = 0;
+            let scrollLeft = 0;
+            let activeRendererIndex = memoryDataView.getUint32(instance.exports.ACTIVE_RENDERER_INDEX.value, true);
+            while (activeRendererIndex !== 1 && target) {
+                scrollLeft += target.scrollLeft;
+                scrollTop += target.scrollTop;
+                target = target.parentElement;
+            }
+            window.mousePositionXThisFrame = event.x + scrollLeft;
+            window.mousePositionYThisFrame = event.y + scrollTop;
         });
 
         document.addEventListener("mousedown", (event) => {
             window.mouseDown = true;
+            window.mouseDownThisFrame = true;
+        });
+
+        document.addEventListener("mouseup", (event) => {
+            window.mouseDown = false;
         });
 
         document.addEventListener("keydown", (event) => {
@@ -323,6 +351,13 @@
                     memoryDataView.setFloat32(addressOfDimensions + 4, sourceDimensions.height, true);
                 }
             },
+            queryScrollOffsetFunction: (addressOfOffset, elementId) => {
+                    let container = document.getElementById(elementId.toString());
+                    if (container) {
+                        memoryDataView.setFloat32(addressOfOffset, -container.scrollLeft, true);
+                        memoryDataView.setFloat32(addressOfOffset + 4, -container.scrollTop, true);
+                    }
+                }
         };
         const { instance } = await WebAssembly.instantiateStreaming(
             fetch("index.wasm"), importObject
@@ -330,9 +365,11 @@
         memoryDataView = new DataView(new Uint8Array(instance.exports.memory.buffer).buffer);
         scratchSpaceAddress = instance.exports.__heap_base.value;
         heapSpaceAddress = instance.exports.__heap_base.value + 1024;
-        let arenaAddress = scratchSpaceAddress;
+        let arenaAddress = scratchSpaceAddress + 8;
         window.instance = instance;
         createMainArena(arenaAddress, heapSpaceAddress);
+        memoryDataView.setFloat32(instance.exports.__heap_base.value, window.innerWidth, true);
+        memoryDataView.setFloat32(instance.exports.__heap_base.value + 4, window.innerHeight, true);
         instance.exports.Clay_Initialize(arenaAddress, instance.exports.__heap_base.value);
         renderCommandSize = getStructTotalSize(renderCommandDefinition);
         renderLoop();
@@ -560,28 +597,8 @@
         let activeRendererIndex = memoryDataView.getUint32(instance.exports.ACTIVE_RENDERER_INDEX.value, true);
         if (activeRendererIndex === 0) {
             instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, 0, 0, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, 0, 0, window.dKeyPressedThisFrame, elapsed / 1000);
-        } else {
-            instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, window.mouseWheelXThisFrame, window.mouseWheelYThisFrame, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, window.arrowKeyDownPressedThisFrame, window.arrowKeyUpPressedThisFrame, window.dKeyPressedThisFrame, elapsed / 1000);
-        }
-        let rendererChanged = activeRendererIndex !== window.previousActiveRendererIndex;
-        switch (activeRendererIndex) {
-            case 0: {
-                renderLoopHTML();
-                if (rendererChanged) {
-                    window.htmlRoot.style.display = 'block';
-                    window.canvasRoot.style.display = 'none';
-                }
-                break;
-            }
-            case 1: {
-                renderLoopCanvas();
-                if (rendererChanged) {
-                    window.htmlRoot.style.display = 'none';
-                    window.canvasRoot.style.display = 'block';
-                }
-                break;
-            }
-        }
+        } 
+        renderLoopHTML();
         window.previousActiveRendererIndex = activeRendererIndex;
         requestAnimationFrame(renderLoop);
         window.mouseDownThisFrame = false;

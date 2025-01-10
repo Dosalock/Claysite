@@ -85,11 +85,9 @@ Clay_RenderCommandArray CreateLayout(bool mobileScreen, float lerpValue)
 				CLAY(CLAY_ID("set_information_container"), CLAY_LAYOUT(set_container_config))
 				{
 					CLAY(CLAY_ID("set_information_bar"),
-						 CLAY_RECTANGLE({
-							 .color = COLOR_SET_CONTAINER_HOVER,
-							 .cornerRadius = {8, 8, 8, 8},
-                             .cursorPointer = true
-						 }),
+						 CLAY_RECTANGLE({.color = COLOR_SET_CONTAINER_HOVER,
+										 .cornerRadius = {8, 8, 8, 8},
+										 .cursorPointer = true}),
 						 CLAY_LAYOUT({.sizing = {CLAY_SIZING_GROW(), CLAY_SIZING_FIXED(50)},
 									  .layoutDirection = CLAY_LEFT_TO_RIGHT,
 									  .childAlignment = {0, CLAY_ALIGN_Y_CENTER},
@@ -101,12 +99,12 @@ Clay_RenderCommandArray CreateLayout(bool mobileScreen, float lerpValue)
 						CLAY(CLAY_LAYOUT({.sizing = {CLAY_SIZING_GROW(), CLAY_SIZING_FIT()}})) { }
 						//CLAY_TEXT(CLAY_STRING("SET TEXT 2"), &btn_text_config);
 						CLAY(CLAY_LAYOUT({.padding = {8, 4}}),
-							 CLAY_RECTANGLE(
-								 {.cornerRadius = CLAY_CORNER_RADIUS(4),
-                                  .cursorPointer = true,
-								  .link = CLAY_STRING("https://discord.gg/b4FTWkxdvT"),
-								  .color = Clay_Hovered() ? COLOR_ITEM : COLOR_ITEM_HOVER,
-                                  }),
+							 CLAY_RECTANGLE({
+								 .cornerRadius = CLAY_CORNER_RADIUS(4),
+								 .cursorPointer = true,
+								 .link = CLAY_STRING("https://discord.gg/b4FTWkxdvT"),
+								 .color = Clay_Hovered() ? COLOR_ITEM : COLOR_ITEM_HOVER,
+							 }),
 							 CLAY_BORDER_OUTSIDE_RADIUS(1, COLOR_CONTAINER_BORDER, 4))
 						{
 							CLAY_TEXT(CLAY_STRING("Discord"),
@@ -116,16 +114,10 @@ Clay_RenderCommandArray CreateLayout(bool mobileScreen, float lerpValue)
 														.textColor = {61, 26, 5, 255}}));
 						}
 					}
-                    Clay_PointerData s = {.state = CLAY_POINTER_DATA_PRESSED_THIS_FRAME};
-					CLAY(CLAY_ID("set_information_bar2"),
-						 CLAY_RECTANGLE({
-							 .color = COLOR_ITEM,
-							 .cornerRadius = {8, 8, 8, 8},
-						 }),
-						 CLAY_LAYOUT({
-							 .sizing = {CLAY_SIZING_GROW(), CLAY_SIZING_FIXED(50)},
-							 .layoutDirection = CLAY_TOP_TO_BOTTOM,
-						 }))
+
+					CLAY(CLAY_ID("set_information_dropdown"),
+						 CLAY_LAYOUT({.sizing = {CLAY_SIZING_GROW(), CLAY_SIZING_FIXED(100)}}),
+						 CLAY_RECTANGLE({.color = {200, 200, 200, 255}}))
 					{ }
 				}
 			}
@@ -239,15 +231,13 @@ Clay_RenderCommandArray UpdateDrawFrame(float width,
 		}
 	}
 
-	
-
 	Clay_UpdateScrollContainers(isTouchDown, (Clay_Vector2){mouseWheelX, mouseWheelY}, deltaTime);
 	bool isMobileScreen = window_width < 750;
 
 	if(debugModeEnabled)
 	{
 		isMobileScreen = window_width < 950;
-        window_width -= 400;
+		window_width -= 400;
 	}
 	return CreateLayout(isMobileScreen,
 						animationLerpValue < 0 ? (animationLerpValue + 1)

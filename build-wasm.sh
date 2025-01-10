@@ -15,6 +15,7 @@ llc                                                                   \
     -march=wasm32                                                     \
     -filetype=obj                                                     \
     -o build/tmp/index.o                                              \
+    --stats                                                           \
     build/tmp/index.ll
 wasm-ld                                                               \
     --strip-all                                                       \

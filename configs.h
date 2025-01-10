@@ -16,7 +16,7 @@ const Clay_Sizing C_EXPAND = (Clay_Sizing){CLAY_SIZING_GROW(), CLAY_SIZING_GROW(
 /* -----------configs----------- */
 
 Clay_TextElementConfig btn_text_config =
-	(Clay_TextElementConfig){.fontId = 2, .fontSize = 24, .textColor = COLOR_TEXT_1};
+	(Clay_TextElementConfig){.fontId = 2, .fontSize = 24, .textColor = COLOR_TEXT_1, .disablePointerEvents = true};
 
 Clay_LayoutConfig set_container_config =
 	(Clay_LayoutConfig){.layoutDirection = CLAY_TOP_TO_BOTTOM,

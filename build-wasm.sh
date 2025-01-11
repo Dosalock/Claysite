@@ -9,6 +9,8 @@ clang                                                                 \
     -mbulk-memory                                                     \
     --target=wasm32                                                   \
     -nostdlib                                                         \
+    -Wall                                                             \
+    -Werror                                                           \
     -o build/tmp/index.ll                                             \
     main.c
 llc                                                                   \

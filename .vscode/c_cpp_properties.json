@@ -27,10 +27,21 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.22621.0",
-            "compilerPath": "C:\\Users\\ThaoG\\llvm-build\\llvm-project\\build\\Release\\bin\\clang.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++20",
-            "intelliSenseMode": "windows-clang-x64"
+            "compilerPath": "C:/Program Files/LLVM/bin/clang.exe",
+            "cStandard": "c99",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "windows-clang-x64",
+            "compilerArgs": [
+                "-emit-llvm                                                        ",
+                "-c                                                                ",
+                "-Os                                                               ",
+                "-DCLAY_WASM                                                       ",
+                "-mbulk-memory                                                     ",
+                "--target=wasm32                                                   ",
+                "-nostdlib                                                         ",
+                "-Wall                                                             ",
+                "-Werror"
+            ]
         }
     ],
     "version": 4

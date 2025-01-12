@@ -1,17 +1,27 @@
-#define CLAY_EXTEND_CONFIG_RECTANGLE Clay_String link; bool cursorPointer;
+#define CLAY_EXTEND_CONFIG_RECTANGLE                                           \
+	Clay_String link;                                                          \
+	bool cursorPointer;
 #define CLAY_EXTEND_CONFIG_IMAGE Clay_String sourceURL;
-#define CLAY_EXTEND_CONFIG_TEXT bool disablePointerEvents;
+#define CLAY_EXTEND_CONFIG_TEXT  bool disablePointerEvents;
+
+
+
 #define CLAY_IMPLEMENTATION
 #include "clay.h"
 #include "objects.h"
 
 double window_width = 1024, window_height = 768;
-float animationLerpValue             = -1.0f;
-float modelPageOneZRotation          = 0;
-uint32_t ACTIVE_RENDERER_INDEX       = 0;
-bool debugModeEnabled                = false;
+float animationLerpValue       = -1.0f;
+float modelPageOneZRotation    = 0;
+uint32_t ACTIVE_RENDERER_INDEX = 0;
+bool debugModeEnabled          = false;
 
-#define RAYLIB_VECTOR2_TO_CLAY_VECTOR2(vector) (Clay_Vector2) { .x = (vector).x, .y = (vector).y }
+
+#define RAYLIB_VECTOR2_TO_CLAY_VECTOR2( vector )                               \
+	( Clay_Vector2 )                                                           \
+	{                                                                          \
+		.x = ( vector ).x, .y = ( vector ).y                                   \
+	}
 
 typedef struct
 {
@@ -22,22 +32,20 @@ typedef struct
 
 ScrollbarData scrollbarData = ( ScrollbarData ) { };
 
-
-
 Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 {
 	Clay_BeginLayout( );
 	// MAKE UI IN HERE
 
-	CLAY( CLAY_ID( "outer_container" ),
-		  CLAY_RECTANGLE( {
-			.color = COLOR_BACKDROP
+	CLAY(
+	  CLAY_ID( "outer_container" ),
+	  CLAY_RECTANGLE( {
+		.color = COLOR_BACKDROP
     } ),
-		  CLAY_LAYOUT(
-			{ .layoutDirection = CLAY_TOP_TO_BOTTOM,
-			  .sizing   = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) },
-			  .padding  = { 16, 16 },
-			  .childGap = 8 } ) )
+	  CLAY_LAYOUT( { .layoutDirection = CLAY_TOP_TO_BOTTOM,
+					 .sizing = { CLAY_SIZING_GROW( 0 ), CLAY_SIZING_GROW( 0 ) },
+					 .padding  = { 16, 16 },
+					 .childGap = 8 } ) )
 	{
 		// Children
 
@@ -83,7 +91,7 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 			}
 			CLAY( CLAY_ID( "main_background" ),
 				  CLAY_RECTANGLE( {
-					.color        = COLOR_BACKGROUND,
+					.color        = {40,1,60,255},
 					.cornerRadius = { 8, 8, 8, 8 },
             } ),
 				  CLAY_LAYOUT( {
@@ -91,9 +99,24 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 					.layoutDirection = CLAY_TOP_TO_BOTTOM,
 				  } ) )
 			{
-				SetInfoBox(1);
-				SetInfoBox(2);
-				
+				CLAY(
+				  CLAY_ID( "OuterScrollContainer" ),
+				  CLAY_LAYOUT( {
+					.sizing = { CLAY_SIZING_GROW( 0 ), CLAY_SIZING_GROW( 0 ) },
+					.layoutDirection = CLAY_TOP_TO_BOTTOM
+                } ),
+				  CLAY_SCROLL( { .vertical = true } )
+				  // CLAY_BORDER( { .betweenChildren = { 2, {255,255,255,255} }
+				  // } )
+				)
+				{
+					SetInfoBox( 1 );
+					SetInfoBox( 2 );
+					SetInfoBox( 3 );
+					SetInfoBox( 4 );
+					SetInfoBox( 5 );
+					SetInfoBox( 6 );
+				}
 			}
 		}
 	}
@@ -118,11 +141,11 @@ Clay_RenderCommandArray UpdateDrawFrame ( float width,
 {
 	window_width  = width;
 	window_height = height;
- 	Clay_SetCullingEnabled(ACTIVE_RENDERER_INDEX == 1);
-	Clay_SetExternalScrollHandlingEnabled(ACTIVE_RENDERER_INDEX == 0);
+	Clay_SetCullingEnabled( ACTIVE_RENDERER_INDEX == 1 );
+	Clay_SetExternalScrollHandlingEnabled( ACTIVE_RENDERER_INDEX == 0 );
 
 	Clay_SetLayoutDimensions( ( Clay_Dimensions ) { width, height } );
-	
+
 	Clay_SetPointerState( ( Clay_Vector2 ) { mousePositionX, mousePositionY },
 						  isMouseDown || isTouchDown );
 	Clay_ScrollContainerData scrollContainerData = Clay_GetScrollContainerData(
@@ -136,7 +159,7 @@ Clay_RenderCommandArray UpdateDrawFrame ( float width,
 			animationLerpValue -= 2;
 		}
 	}
-	
+
 
 	if ( dKeyPressedThisFrame )
 	{
@@ -149,6 +172,12 @@ Clay_RenderCommandArray UpdateDrawFrame ( float width,
 	if ( !isMouseDown )
 	{
 		scrollbarData.mouseDown = false;
+	}
+	if ( isMouseDown
+		 && Clay_PointerOver(
+		   Clay_GetElementIdWithIndex( CLAY_STRING( "set_information_button" ),
+									   1 ) ) )
+	{
 	}
 
 	if ( isMouseDown && !scrollbarData.mouseDown

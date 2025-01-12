@@ -7,14 +7,15 @@
 
 void HeaderButton ( char *string )
 {
-	CLAY( CLAY_RECTANGLE( {
-			.color        = COLOR_ITEM,
-			.cornerRadius = { 4, 4, 4, 4 }
+	CLAY(
+	  CLAY_RECTANGLE( {
+		.color        = COLOR_ITEM,
+		.cornerRadius = { 4, 4, 4, 4 }
     } ),
-		  CLAY_LAYOUT( {
-			.sizing = { CLAY_SIZING_FIT(  .min = 100 ), CLAY_SIZING_PERCENT( 1.75 ) },
-			.childAlignment = { CLAY_ALIGN_X_CENTER, CLAY_ALIGN_Y_CENTER },
-		  } ) )
+	  CLAY_LAYOUT( {
+		.sizing = { CLAY_SIZING_FIT(.min = 100 ), CLAY_SIZING_PERCENT( 1.75 ) },
+		.childAlignment = { CLAY_ALIGN_X_CENTER, CLAY_ALIGN_Y_CENTER },
+	  } ) )
 	{
 		CLAY_TEXT( CharPtrToClayString( string ), &btn_text_config );
 	}
@@ -41,14 +42,15 @@ void BodgeMargin ( int left_gap,
 	CLAY( CLAY_LAYOUT(
 	  { .sizing = C_EXPAND, .layoutDirection = CLAY_LEFT_TO_RIGHT } ) )
 	{
-		CLAY( Clay__AttachId( Clay__HashString( CLAY_STRING( "margin_rect_left" ),
-												left_gap + function_index,
-												left_gap + function_index ) ),
-			  CLAY_LAYOUT( {
-				.sizing = { CLAY_SIZING_FIXED( left_gap ),
-                           CLAY_SIZING_GROW( 0 ) }
+		CLAY(
+		  Clay__AttachId( Clay__HashString( CLAY_STRING( "margin_rect_left" ),
+											left_gap + function_index,
+											left_gap + function_index ) ),
+		  CLAY_LAYOUT( {
+			.sizing = { CLAY_SIZING_FIXED( left_gap ),
+                       CLAY_SIZING_GROW( 0 ) }
         } ),
-			  CLAY_RECTANGLE( { .color = COLOR_MARGIN } ) ) 
+		  CLAY_RECTANGLE( { .color = COLOR_MARGIN } ) )
 		{
 		}
 		CLAY( CLAY_LAYOUT(
@@ -57,14 +59,15 @@ void BodgeMargin ( int left_gap,
 			function_pointer( function_index );
 		}
 
-		CLAY( Clay__AttachId( Clay__HashString( CLAY_STRING( "margin_rect_right" ),
-												right_gap + function_index,
-												right_gap + function_index ) ),
-			  CLAY_LAYOUT( {
-				.sizing = { CLAY_SIZING_FIXED( right_gap ),
-                           CLAY_SIZING_GROW( 0 ) }
+		CLAY(
+		  Clay__AttachId( Clay__HashString( CLAY_STRING( "margin_rect_right" ),
+											right_gap + function_index,
+											right_gap + function_index ) ),
+		  CLAY_LAYOUT( {
+			.sizing = { CLAY_SIZING_FIXED( right_gap ),
+                       CLAY_SIZING_GROW( 0 ) }
         } ),
-			  CLAY_RECTANGLE( { .color = COLOR_MARGIN } ) )
+		  CLAY_RECTANGLE( { .color = COLOR_MARGIN } ) )
 		{
 		}
 	}
@@ -88,7 +91,7 @@ void SetInfoBody ( int index )
 	  CLAY_RECTANGLE( {
 		.color = COLOR_ITEM,
 		// change this to 8888 when collapsed
-		.cornerRadius  = { 8, 8, 0, 0 },
+		.cornerRadius  = { 8, 8, 0, 0},
 		.cursorPointer = true
     } ),
 	  CLAY_LAYOUT( { .sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_FIXED( 50 ) },

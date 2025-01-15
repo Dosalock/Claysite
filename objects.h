@@ -21,69 +21,6 @@ void HeaderButton ( char *string )
 	}
 }
 
-void BodgeMargin ( int left_gap,
-				   int right_gap,
-				   int top_gap,
-				   int bottom_gap,
-				   int function_index,
-				   void ( *function_pointer )( int ) )
-{
-	CLAY(
-	  Clay__AttachId( Clay__HashString( CLAY_STRING( "margin_rect_top" ),
-										top_gap + function_index,
-										top_gap + function_index ) ),
-	  CLAY_LAYOUT( {
-		.sizing = { CLAY_SIZING_GROW( 0 ), CLAY_SIZING_FIXED( top_gap ) }
-    } ),
-	  CLAY_RECTANGLE( { .color = COLOR_MARGIN } ) )
-	{
-	}
-
-	CLAY( CLAY_LAYOUT(
-	  { .sizing = C_EXPAND, .layoutDirection = CLAY_LEFT_TO_RIGHT } ) )
-	{
-		CLAY(
-		  Clay__AttachId( Clay__HashString( CLAY_STRING( "margin_rect_left" ),
-											left_gap + function_index,
-											left_gap + function_index ) ),
-		  CLAY_LAYOUT( {
-			.sizing = { CLAY_SIZING_FIXED( left_gap ),
-                       CLAY_SIZING_GROW( 0 ) }
-        } ),
-		  CLAY_RECTANGLE( { .color = COLOR_MARGIN } ) )
-		{
-		}
-		CLAY( CLAY_LAYOUT(
-		  { .sizing = C_EXPAND, .layoutDirection = CLAY_TOP_TO_BOTTOM } ) )
-		{
-			function_pointer( function_index );
-		}
-
-		CLAY(
-		  Clay__AttachId( Clay__HashString( CLAY_STRING( "margin_rect_right" ),
-											right_gap + function_index,
-											right_gap + function_index ) ),
-		  CLAY_LAYOUT( {
-			.sizing = { CLAY_SIZING_FIXED( right_gap ),
-                       CLAY_SIZING_GROW( 0 ) }
-        } ),
-		  CLAY_RECTANGLE( { .color = COLOR_MARGIN } ) )
-		{
-		}
-	}
-
-	CLAY( Clay__AttachId( Clay__HashString( CLAY_STRING( "margin_rect_bottom" ),
-											bottom_gap + function_index,
-											bottom_gap + function_index ) ),
-		  CLAY_LAYOUT( {
-			.sizing = { CLAY_SIZING_GROW( 0 ),
-                       CLAY_SIZING_FIXED( bottom_gap ) }
-    } ),
-		  CLAY_RECTANGLE( { .color = COLOR_MARGIN } ) )
-	{
-	}
-}
-
 void SetInfoBody ( int index )
 {
 	CLAY(
@@ -97,7 +34,7 @@ void SetInfoBody ( int index )
 	  CLAY_LAYOUT( { .sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_FIXED( 50 ) },
 					 .layoutDirection = CLAY_LEFT_TO_RIGHT,
 					 .childAlignment  = { 0, CLAY_ALIGN_Y_CENTER },
-					 .padding         = { 8, 8 },
+					 .padding         = CLAY_PADDING_ALL(8),
 					 .childGap        = 8 } ),
 
 	  CLAY_BORDER( set_information_bar_border_config ) )
@@ -113,7 +50,7 @@ void SetInfoBody ( int index )
 
 		CLAY( CLAY_IDI( "set_information_button", index ),
 			  CLAY_LAYOUT( {
-				.padding = { 10, 4 }
+				.padding = { 10 ,10, 4, 4 }
         } ),
 			  CLAY_RECTANGLE( {
 				.cornerRadius  = CLAY_CORNER_RADIUS( 4 ),
@@ -148,18 +85,25 @@ void SetInfoBody ( int index )
 
 void SetInfoBox ( int index )
 {
+
+	
+
+
 	CLAY( CLAY_IDI( "set_information_wrapper", index ),
 		  CLAY_LAYOUT( layout_config_set_container ) )
 	{
 		CLAY( CLAY_IDI( "set_information_container", index ),
 			  CLAY_LAYOUT( {
 				.sizing = { CLAY_SIZING_GROW( 0 ), CLAY_SIZING_GROW( 0 ) },
-				.layoutDirection = CLAY_TOP_TO_BOTTOM
+				.layoutDirection = CLAY_TOP_TO_BOTTOM,
+				.padding = {0,15,0,15}
         } ),
 			  CLAY_RECTANGLE( { .color        = { 0, 0, 0, 64 },
-								.cornerRadius = { 0, 11, 11, 11 } } ) )
+								.cornerRadius = { 0, 11, 11, 11 } } ),
+			  CLAY_BORDER(dropShadow) )
 		{
-			BodgeMargin( 0, 5, 0, 5, index, &SetInfoBody );
+			//BodgeMargin( 0, 5, 0, 5, index, &SetInfoBody );
+			SetInfoBody(index);
 		}
 	}
 }

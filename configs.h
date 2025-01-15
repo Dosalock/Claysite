@@ -15,9 +15,9 @@
 
 /* ------------defines------------ */
 #if __DEBUG_LEVEL > 1
-#define COLOR_MARGIN ( Clay_Color ) { 255, 0, 255, 255 }
+#define COLOR_DROPSHADOW ( Clay_Color ) { 255, 0, 255, 255 }
 #else
-#define COLOR_MARGIN ( Clay_Color ) { 0, 0, 0, 0 } 
+#define COLOR_DROPSHADOW ( Clay_Color ) { 0, 0, 0, 64 } 
 #endif
  
 
@@ -99,5 +99,12 @@ Clay_TextElementConfig set_information_dropdown_text_config = {
 	.fontSize  = 18,
 	.textColor = COLOR_TEXT_2
 };
+
+
+Clay_BorderElementConfig dropShadow = {
+		.bottom = { 6, COLOR_DROPSHADOW},
+		.right = { 6, COLOR_DROPSHADOW},
+		.cornerRadius = {0,15,15,10}
+	};
 
 #endif

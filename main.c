@@ -5,7 +5,7 @@
 #define CLAY_EXTEND_CONFIG_TEXT  bool disablePointerEvents;
 
 
-
+#define __DEBUG_LEVEL 0
 #define CLAY_IMPLEMENTATION
 #include "clay.h"
 #include "objects.h"
@@ -44,7 +44,7 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
     } ),
 	  CLAY_LAYOUT( { .layoutDirection = CLAY_TOP_TO_BOTTOM,
 					 .sizing = { CLAY_SIZING_GROW( 0 ), CLAY_SIZING_GROW( 0 ) },
-					 .padding  = { 16, 16 },
+					 .padding  = CLAY_PADDING_ALL( 16 ),
 					 .childGap = 8 } ) )
 	{
 		// Children
@@ -63,8 +63,8 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 				  CLAY_LAYOUT( {
 					.layoutDirection = CLAY_LEFT_TO_RIGHT,
 					.sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_GROW( ) },
-					.childAlignment = {                   0, CLAY_ALIGN_Y_CENTER },
-					.padding        = {                  16,                  32 },
+					.childAlignment = { 0, CLAY_ALIGN_Y_CENTER },
+					.padding        = { 16, 16, 32, 32 },
 					.childGap       = 8,
             } ) )
 			{
@@ -91,8 +91,8 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 			}
 			CLAY( CLAY_ID( "main_background" ),
 				  CLAY_RECTANGLE( {
-					.color        = {40,1,60,255},
-					.cornerRadius = { 8, 8, 8, 8 },
+					.color        = { 40, 1, 60, 255 },
+					.cornerRadius = {  8, 8,  8,   8 },
             } ),
 				  CLAY_LAYOUT( {
 					.sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_FIT( ) },

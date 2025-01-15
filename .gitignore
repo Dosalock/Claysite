@@ -1,7 +1,9 @@
-.ll
-.o
-.wasm
+*.ll
+*.o
+*.wasm
 
+build/*
 build/
 canvas2d/
 .vscode/
+.vscode/*

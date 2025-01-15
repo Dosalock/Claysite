@@ -1,27 +1,46 @@
+/**------------------------------------------------------------------------
+ * ?                                ABOUT
+ * @author         :  Johan Karlsson
+ * @email          :  j.ef.karlsson@gmail.com
+ * @repo           :  Claysite
+ * @createdOn      :  2025-01-15
+ * @description    :  Main entry and render loop
+ *------------------------------------------------------------------------**/
+
+
+/*-------------------------------- Defines ------------------------------*/
+
+/*------- Clay.h -------*/
+
 #define CLAY_EXTEND_CONFIG_RECTANGLE                                           \
 	Clay_String link;                                                          \
 	bool cursorPointer;
 #define CLAY_EXTEND_CONFIG_IMAGE Clay_String sourceURL;
 #define CLAY_EXTEND_CONFIG_TEXT  bool disablePointerEvents;
-
-
-#define __DEBUG_LEVEL 0
 #define CLAY_IMPLEMENTATION
-#include "clay.h"
-#include "objects.h"
-
-double window_width = 1024, window_height = 768;
-float animationLerpValue       = -1.0f;
-float modelPageOneZRotation    = 0;
-uint32_t ACTIVE_RENDERER_INDEX = 0;
-bool debugModeEnabled          = false;
-
-
 #define RAYLIB_VECTOR2_TO_CLAY_VECTOR2( vector )                               \
 	( Clay_Vector2 )                                                           \
 	{                                                                          \
 		.x = ( vector ).x, .y = ( vector ).y                                   \
 	}
+
+/*------- Debug -------*/
+#define __DEBUG_LEVEL 0
+
+
+/*-------------------------------- Includes ------------------------------*/
+
+#include "clay.h"
+#include "objects.h"
+
+
+/*-------------------------------- Globals ------------------------------*/
+
+bool debug_mode_enabled = false;
+double window_width = 1024, window_height = 768;
+float animation_lerp_value     = -1.0f;
+ScrollbarData scrollbarData    = ( ScrollbarData ) { };
+uint32_t ACTIVE_RENDERER_INDEX = 0;
 
 typedef struct
 {
@@ -30,7 +49,7 @@ typedef struct
 	bool mouseDown;
 } ScrollbarData;
 
-ScrollbarData scrollbarData = ( ScrollbarData ) { };
+/*-------------------------------- Functions ------------------------------*/
 
 Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 {
@@ -39,7 +58,7 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 
 	CLAY(
 	  CLAY_ID( "outer_container" ),
-	  CLAY_RECTANGLE( {	
+	  CLAY_RECTANGLE( {
 		.color = COLOR_BACKDROP
     } ),
 	  CLAY_LAYOUT( { .layoutDirection = CLAY_TOP_TO_BOTTOM,
@@ -124,6 +143,7 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 	return Clay_EndLayout( );
 }
 
+
 CLAY_WASM_EXPORT( "UpdateDrawFrame" )
 
 Clay_RenderCommandArray UpdateDrawFrame ( float width,
@@ -153,19 +173,19 @@ Clay_RenderCommandArray UpdateDrawFrame ( float width,
 
 	if ( deltaTime == deltaTime )
 	{ // NaN propagation can cause pain here
-		animationLerpValue += deltaTime;
-		if ( animationLerpValue > 1 )
+		animation_lerp_value += deltaTime;
+		if ( animation_lerp_value > 1 )
 		{
-			animationLerpValue -= 2;
+			animation_lerp_value -= 2;
 		}
 	}
 
 
 	if ( dKeyPressedThisFrame )
 	{
-		debugModeEnabled = !debugModeEnabled;
+		debug_mode_enabled = !debug_mode_enabled;
 
-		Clay_SetDebugModeEnabled( debugModeEnabled );
+		Clay_SetDebugModeEnabled( debug_mode_enabled );
 	}
 	Clay__debugViewHighlightColor = ( Clay_Color ) { 105, 210, 231, 120 };
 
@@ -236,14 +256,15 @@ Clay_RenderCommandArray UpdateDrawFrame ( float width,
 								 deltaTime );
 	bool isMobileScreen = window_width < 750;
 
-	if ( debugModeEnabled )
+	if ( debug_mode_enabled )
 	{
 		isMobileScreen  = window_width < 950;
 		window_width   -= 400;
 	}
 	return CreateLayout( isMobileScreen,
-						 animationLerpValue < 0 ? ( animationLerpValue + 1 )
-												: ( 1 - animationLerpValue ) );
+						 animation_lerp_value < 0
+						   ? ( animation_lerp_value + 1 )
+						   : ( 1 - animation_lerp_value ) );
 }
 
 // Dummy main() to please cmake - TODO get wasm working with cmake on this

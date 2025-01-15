@@ -1,7 +1,21 @@
+/**------------------------------------------------------------------------
+ * ?                                ABOUT
+ * @author         :  Johan Karlsson
+ * @email          :  j.ef.karlsson@gmail.com
+ * @repo           :  Claysite
+ * @createdOn      :  2025-01-15
+ * @description    :  Style configurations for clay.h
+ *------------------------------------------------------------------------**/
 #ifndef __CONFIGS_H__
 #define __CONFIGS_H__
 
 #include "clay.h"
+
+
+/*-------------------------------- Defines ------------------------------*/
+
+
+/*--------------- Text filler ----------------*/
 
 #define impsum                                                                 \
 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
@@ -13,14 +27,16 @@
 	"mollit anim id est laborum."
 
 
-/* ------------defines------------ */
+
+/*------------------ Colors -----------------*/
+
 #if __DEBUG_LEVEL > 1
+
 #define COLOR_DROPSHADOW ( Clay_Color ) { 255, 0, 255, 255 }
+
 #else
+
 #define COLOR_DROPSHADOW ( Clay_Color ) { 0, 0, 0, 64 }
-#endif
-
-
 #define COLOR_BACKDROP         ( Clay_Color ) { 15, 0, 40, 255 }
 #define COLOR_BACKGROUND       ( Clay_Color ) { 20, 0, 50, 255 }
 #define COLOR_ITEM             ( Clay_Color ) { 60, 9, 108, 255 }
@@ -29,10 +45,16 @@
 #define COLOR_TEXT_2           ( Clay_Color ) { 255, 158, 0, 255 }
 #define COLOR_CONTAINER_BORDER ( Clay_Color ) { 90, 24, 154, 255 }
 
+#endif
+
+
+
+/*-------------------------------- Configs ------------------------------*/
+
+// Sizing const for exand all
 const Clay_Sizing C_EXPAND =
   ( Clay_Sizing ) { CLAY_SIZING_GROW( 0 ), CLAY_SIZING_GROW( 0 ) };
 
-/* -----------configs----------- */
 
 Clay_TextElementConfig btn_text_config =
   ( Clay_TextElementConfig ) { .fontId               = 2,
@@ -40,10 +62,20 @@ Clay_TextElementConfig btn_text_config =
 							   .textColor            = COLOR_TEXT_1,
 							   .disablePointerEvents = true };
 
-Clay_LayoutConfig layout_config_set_container = ( Clay_LayoutConfig ) {
-	.layoutDirection = CLAY_TOP_TO_BOTTOM,
-	.sizing          = { CLAY_SIZING_FIXED( 400 ), CLAY_SIZING_FIT( ) },
-	.padding         = { 8, 8, 8, 8 }
+Clay_TextElementConfig set_information_dropdown_text_config = {
+	.fontId    = 2,
+	.fontSize  = 18,
+	.textColor = COLOR_TEXT_2
+};
+
+
+
+/*------------------ Border Configs -----------------*/
+
+Clay_BorderElementConfig dropShadow = {
+	.bottom       = { 6, COLOR_DROPSHADOW },
+	.right        = { 6, COLOR_DROPSHADOW },
+	.cornerRadius = { 0, 15, 15, 10 }
 };
 
 Clay_BorderElementConfig set_information_bar_border_config = {
@@ -72,6 +104,10 @@ Clay_BorderElementConfig set_information_dropdown_border_hidden_config = {
 	.cornerRadius = { 0, 0, 0, 0 }
 };
 
+
+
+/*------------------ Rect Configs -----------------*/
+
 Clay_RectangleElementConfig set_information_dropdown_rect_config = {
 	.color        = COLOR_BACKGROUND,
 	.cornerRadius = { 0, 0, 8, 8 }
@@ -82,6 +118,15 @@ Clay_RectangleElementConfig set_information_dropdown_rect_hidden_config = {
 	.cornerRadius = { 0, 0, 0,   0 }
 };
 
+
+
+/*------------------ Layout Configs -----------------*/
+
+Clay_LayoutConfig layout_config_set_container = ( Clay_LayoutConfig ) {
+	.layoutDirection = CLAY_TOP_TO_BOTTOM,
+	.sizing          = { CLAY_SIZING_FIXED( 400 ), CLAY_SIZING_FIT( ) },
+	.padding         = { 8, 8, 8, 8 }
+};
 Clay_LayoutConfig set_information_dropdown_layout_open_config = {
 	.sizing  = { CLAY_SIZING_FIT( ), CLAY_SIZING_FIT( ) },
 	.padding = {				  8,                  8 }
@@ -92,17 +137,7 @@ Clay_LayoutConfig set_information_dropdown_layout_closed_config = {
 	.padding = {     0,     0 }
 };
 
-Clay_TextElementConfig set_information_dropdown_text_config = {
-	.fontId    = 2,
-	.fontSize  = 18,
-	.textColor = COLOR_TEXT_2
-};
 
 
-Clay_BorderElementConfig dropShadow = {
-	.bottom       = { 6, COLOR_DROPSHADOW },
-	.right        = { 6, COLOR_DROPSHADOW },
-	.cornerRadius = { 0, 15, 15, 10 }
-};
 
 #endif

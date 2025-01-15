@@ -1,3 +1,11 @@
+/**------------------------------------------------------------------------
+ * ?                                ABOUT
+ * @author         :  Johan Karlsson
+ * @email          :  j.ef.karlsson@gmail.com
+ * @repo           :  Claysite
+ * @createdOn      :  2025-01-15
+ * @description    :  Object/widget creation | Buttons, boxes etc.
+ *------------------------------------------------------------------------**/
 #ifndef __OBJECTS_H__
 #define __OBJECTS_H__
 

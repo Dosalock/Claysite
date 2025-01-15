@@ -17,9 +17,8 @@
 #if __DEBUG_LEVEL > 1
 #define COLOR_DROPSHADOW ( Clay_Color ) { 255, 0, 255, 255 }
 #else
-#define COLOR_DROPSHADOW ( Clay_Color ) { 0, 0, 0, 64 } 
+#define COLOR_DROPSHADOW ( Clay_Color ) { 0, 0, 0, 64 }
 #endif
- 
 
 
 #define COLOR_BACKDROP         ( Clay_Color ) { 15, 0, 40, 255 }
@@ -44,8 +43,7 @@ Clay_TextElementConfig btn_text_config =
 Clay_LayoutConfig layout_config_set_container = ( Clay_LayoutConfig ) {
 	.layoutDirection = CLAY_TOP_TO_BOTTOM,
 	.sizing          = { CLAY_SIZING_FIXED( 400 ), CLAY_SIZING_FIT( ) },
-	// .childGap        = 16,
-	.padding = {						8,                  8 }
+	.padding         = { 8, 8, 8, 8 }
 };
 
 Clay_BorderElementConfig set_information_bar_border_config = {
@@ -102,9 +100,9 @@ Clay_TextElementConfig set_information_dropdown_text_config = {
 
 
 Clay_BorderElementConfig dropShadow = {
-		.bottom = { 6, COLOR_DROPSHADOW},
-		.right = { 6, COLOR_DROPSHADOW},
-		.cornerRadius = {0,15,15,10}
-	};
+	.bottom       = { 6, COLOR_DROPSHADOW },
+	.right        = { 6, COLOR_DROPSHADOW },
+	.cornerRadius = { 0, 15, 15, 10 }
+};
 
 #endif

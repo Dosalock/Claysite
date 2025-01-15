@@ -39,7 +39,7 @@ Clay_RenderCommandArray CreateLayout ( bool mobileScreen, float lerpValue )
 
 	CLAY(
 	  CLAY_ID( "outer_container" ),
-	  CLAY_RECTANGLE( {
+	  CLAY_RECTANGLE( {	
 		.color = COLOR_BACKDROP
     } ),
 	  CLAY_LAYOUT( { .layoutDirection = CLAY_TOP_TO_BOTTOM,

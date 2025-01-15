@@ -28,13 +28,13 @@ void SetInfoBody ( int index )
 	  CLAY_RECTANGLE( {
 		.color = COLOR_ITEM,
 		// change this to 8888 when collapsed
-		.cornerRadius  = { 8, 8, 0, 0},
+		.cornerRadius  = { 8, 8, 0, 0 },
 		.cursorPointer = true
     } ),
 	  CLAY_LAYOUT( { .sizing = { CLAY_SIZING_GROW( ), CLAY_SIZING_FIXED( 50 ) },
 					 .layoutDirection = CLAY_LEFT_TO_RIGHT,
 					 .childAlignment  = { 0, CLAY_ALIGN_Y_CENTER },
-					 .padding         = CLAY_PADDING_ALL(8),
+					 .padding         = CLAY_PADDING_ALL( 8 ),
 					 .childGap        = 8 } ),
 
 	  CLAY_BORDER( set_information_bar_border_config ) )
@@ -50,7 +50,7 @@ void SetInfoBody ( int index )
 
 		CLAY( CLAY_IDI( "set_information_button", index ),
 			  CLAY_LAYOUT( {
-				.padding = { 10 ,10, 4, 4 }
+				.padding = { 10, 10, 4, 4 }
         } ),
 			  CLAY_RECTANGLE( {
 				.cornerRadius  = CLAY_CORNER_RADIUS( 4 ),
@@ -85,10 +85,6 @@ void SetInfoBody ( int index )
 
 void SetInfoBox ( int index )
 {
-
-	
-
-
 	CLAY( CLAY_IDI( "set_information_wrapper", index ),
 		  CLAY_LAYOUT( layout_config_set_container ) )
 	{
@@ -96,14 +92,12 @@ void SetInfoBox ( int index )
 			  CLAY_LAYOUT( {
 				.sizing = { CLAY_SIZING_GROW( 0 ), CLAY_SIZING_GROW( 0 ) },
 				.layoutDirection = CLAY_TOP_TO_BOTTOM,
-				.padding = {0,15,0,15}
+				.padding         = { 0, 15, 0, 15 }
         } ),
-			  CLAY_RECTANGLE( { .color        = { 0, 0, 0, 64 },
-								.cornerRadius = { 0, 11, 11, 11 } } ),
-			  CLAY_BORDER(dropShadow) )
+			  CLAY_BORDER( dropShadow ) )
 		{
-			//BodgeMargin( 0, 5, 0, 5, index, &SetInfoBody );
-			SetInfoBody(index);
+			// BodgeMargin( 0, 5, 0, 5, index, &SetInfoBody );
+			SetInfoBody( index );
 		}
 	}
 }

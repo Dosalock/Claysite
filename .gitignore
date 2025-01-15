@@ -1,0 +1,7 @@
+.ll
+.o
+.wasm
+
+build/
+canvas2d/
+.vscode/

@@ -1,13 +1,14 @@
-
 mkdir -p build/clay
 mkdir -p build/tmp
 clang                                                                 \
+    -std=c99                                                          \
     -emit-llvm                                                        \
     -c                                                                \
     -Os                                                               \
     -DCLAY_WASM                                                       \
     -mbulk-memory                                                     \
     --target=wasm32                                                   \
+    --include-directory C:/MinGW/include                              \
     -nostdlib                                                         \
     -Wall                                                             \
     -Werror                                                           \
@@ -26,6 +27,7 @@ wasm-ld                                                               \
     --export=__heap_base                                              \
     --export=ACTIVE_RENDERER_INDEX                                    \
     --initial-memory=6553600                                          \
+    --gc-sections                                                     \
     -o build/tmp/index.wasm                                           \
     build/tmp/index.o
 cp index.html build/clay/index.html

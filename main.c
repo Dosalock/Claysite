@@ -14,7 +14,8 @@
 
 #define CLAY_EXTEND_CONFIG_RECTANGLE                                           \
 	Clay_String link;                                                          \
-	bool cursorPointer;
+	bool cursor_pointer;                                                       \
+	bool clicked;
 #define CLAY_EXTEND_CONFIG_IMAGE Clay_String sourceURL;
 #define CLAY_EXTEND_CONFIG_TEXT  bool disablePointerEvents;
 #define CLAY_IMPLEMENTATION
@@ -24,6 +25,7 @@
 		.x = ( vector ).x, .y = ( vector ).y                                   \
 	}
 
+
 /*------- Debug -------*/
 #define __DEBUG_LEVEL 0
 
@@ -31,9 +33,9 @@
 /*-------------------------------- Includes ------------------------------*/
 
 #include "clay.h"
+#include "events.h"
 #include "objects.h"
-
-
+#include "helper.h"
 /*-------------------------------- Globals ------------------------------*/
 
 bool debug_mode_enabled = false;
@@ -41,8 +43,6 @@ double window_width = 1024, window_height = 768;
 float animation_lerp_value     = -1.0f;
 ScrollbarData scrollbar_data   = ( ScrollbarData ) { };
 uint32_t ACTIVE_RENDERER_INDEX = 0;
-
-
 
 /*-------------------------------- Functions ------------------------------*/
 
@@ -71,7 +71,6 @@ Clay_RenderCommandArray CreateLayout ( bool mobile_screen, float lerp_value )
 				  CLAY_LAYOUT( header_button_container_layout_config ) )
 			{
 				HeaderButton( "test" );
-
 				HeaderButton( "test2asdf" );
 			}
 		}
@@ -92,12 +91,11 @@ Clay_RenderCommandArray CreateLayout ( bool mobile_screen, float lerp_value )
 				  CLAY_RECTANGLE( main_background_rect_config ),
 				  CLAY_LAYOUT( main_background_layout_config ) )
 			{
-				CLAY(
-				  CLAY_ID( "main_scroll_container_layout_config" ),
-				  CLAY_LAYOUT(main_scroll_container_layout_config ),
-				  CLAY_SCROLL( { .vertical = true } )
-				  // CLAY_BORDER( { .betweenChildren = { 2, {255,255,255,255} }
-				  // } )
+				CLAY( CLAY_ID( "main_scroll_container" ),
+					  CLAY_LAYOUT( main_scroll_container_layout_config ),
+					  CLAY_SCROLL( { .vertical = true } )
+					  // CLAY_BORDER( { .betweenChildren = { 2,
+					  // {255,255,255,255} } } )
 				)
 				{
 					SetInfoBox( 1 );
@@ -153,7 +151,37 @@ Clay_RenderCommandArray
 			animation_lerp_value -= 2;
 		}
 	}
+	Clay_Dimensions c = Clay__MeasureText(&CLAY_STRING("A"), &set_information_dropdown_text_config);
+	float c_x = ( c.width ) / 2.0f;
+	float c_y = ( c.height ) / 2.0f;
+	Clay_ElementId textbox_id = Clay_GetElementIdWithIndex(
+						CLAY_STRING( "set_information_dropdown" ),
+						2 );
+	Coordinate mouse = GetMouseHighlightCoordinates(mouse_position_X, mouse_position_y, textbox_id);
+	highlight_text_offset_x = 12 + (c.width * mouse.x)+0.5f;
+	highlight_text_offset_y = 16 + (c.height * mouse.y) +0.5f;
 
+
+	// clang-format off
+	floating_element_test_config = ( Clay_FloatingElementConfig ) {
+		.expand = { 
+			.width  = c_x,
+			.height = c_y,
+		},
+		.parentId = Clay_GetElementIdWithIndex(
+						CLAY_STRING( "set_information_dropdown" ),
+						2 )
+						.id,
+		.zIndex     = 3,
+		
+		.pointerCaptureMode = CLAY_POINTER_CAPTURE_MODE_PASSTHROUGH,
+		.offset = { 
+			.x = highlight_text_offset_x,
+
+			.y = highlight_text_offset_y                
+		}
+		// clang-format on
+	};
 
 	if ( d_key_pressed_this_frame )
 	{
@@ -172,6 +200,8 @@ Clay_RenderCommandArray
 		   Clay_GetElementIdWithIndex( CLAY_STRING( "set_information_button" ),
 									   1 ) ) )
 	{
+		// Clay_ElementId c = Clay_GetElementIdWithIndex( CLAY_STRING(
+		// "set_information_button" ),1 );
 	}
 
 	if ( is_mouse_down && !scrollbar_data.mouse_down

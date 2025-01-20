@@ -78,7 +78,7 @@
     const CLAY_RENDER_COMMAND_TYPE_SCISSOR_START = 5;
     const CLAY_RENDER_COMMAND_TYPE_SCISSOR_END = 6;
     const CLAY_RENDER_COMMAND_TYPE_CUSTOM = 7;
-    const GLOBAL_FONT_SCALING_FACTOR = 0.8;
+    const GLOBAL_FONT_SCALING_FACTOR = 1;
     let renderCommandSize = 0;
     let scratchSpaceAddress = 8;
     let heapSpaceAddress = 0;
@@ -338,7 +338,14 @@
                         memoryDataView.setFloat32(addressOfOffset, -container.scrollLeft, true);
                         memoryDataView.setFloat32(addressOfOffset + 4, -container.scrollTop, true);
                     }
-                }
+                },
+                consoleLog: (stringAddress) => {
+                    let string = readStructAtAddress(stringAddress, stringDefinition);
+                    let stringContents = new Uint8Array(memoryDataView.buffer.slice(string.chars.value, string.chars.value + string.length.value));
+                    let textDecoder = new TextDecoder("utf-8");
+                    let message = textDecoder.decode(stringContents);
+                    console.log("WASM Says:", message);
+                 }
             },
         };
         const { instance } = await WebAssembly.instantiateStreaming(

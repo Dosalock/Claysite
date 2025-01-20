@@ -14,8 +14,17 @@
 
 /*-------------------------------- Defines ------------------------------*/
 
-
+int highlight_text_offset_x = 0;
+int highlight_text_offset_y = 0;
+#define GLOBAL_FONT_SCALING_FACTOR 1.0f
 /*--------------- Text filler ----------------*/
+const Clay_String cs = CLAY_STRING_CONST("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
+	"tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "    \
+	"veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea " \
+	"commodo consequat. Duis aute irure dolor in reprehenderit in voluptate "  \
+	"velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint "       \
+	"occaecat cupidatat non proident, sunt in culpa qui officia deserunt "     \
+	"mollit anim id est laborum.");
 
 #define impsum                                                                 \
 	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
@@ -63,7 +72,9 @@ Clay_TextElementConfig btn_text_config =
 Clay_TextElementConfig set_information_dropdown_text_config = {
 	.fontId    = 2,
 	.fontSize  = 18,
-	.textColor = COLOR_TEXT_2
+	.textColor = COLOR_TEXT_2,
+	.wrapMode = CLAY_TEXT_WRAP_WORDS,
+	.lineHeight = 16
 };
 
 
@@ -80,12 +91,20 @@ Clay_BorderElementConfig drop_shadow = {
 
 /*------- Set Information -------*/
 
-Clay_BorderElementConfig set_information_bar_border_config = {
+Clay_BorderElementConfig set_information_bar_open_border_config = {
 	.bottom       = { 2, COLOR_CONTAINER_BORDER },
 	.top          = { 2, COLOR_CONTAINER_BORDER },
 	.left         = { 2, COLOR_CONTAINER_BORDER },
 	.right        = { 2, COLOR_CONTAINER_BORDER },
 	.cornerRadius = { 8, 8, 0, 0 }
+};
+
+Clay_BorderElementConfig set_information_bar_closed_border_config = {
+	.bottom       = { 2, COLOR_CONTAINER_BORDER },
+	.top          = { 2, COLOR_CONTAINER_BORDER },
+	.left         = { 2, COLOR_CONTAINER_BORDER },
+	.right        = { 2, COLOR_CONTAINER_BORDER },
+	.cornerRadius = { 8, 8, 8, 8 }
 };
 
 Clay_BorderElementConfig set_information_dropdown_border_config = {
@@ -138,27 +157,27 @@ Clay_RectangleElementConfig set_information_dropdown_rect_hidden_config = {
 	.cornerRadius = { 0, 0, 0,   0 }
 };
 
-Clay_RectangleElementConfig set_information_bar_rect_open_config = {
+Clay_RectangleElementConfig set_information_bar_open_rect_config = {
 	.color         = COLOR_ITEM,
 	.cornerRadius  = { 8, 8, 0, 0 },
-	.cursorPointer = true
+	.cursor_pointer = true
 };
 
 Clay_RectangleElementConfig set_information_bar_rect_closed_config = {
 	.color         = COLOR_ITEM,
 	.cornerRadius  = { 8, 8, 8, 8 },
-	.cursorPointer = true
+	.cursor_pointer = true
 };
 
 Clay_RectangleElementConfig set_information_button_rect_config = {
 	.cornerRadius  = CLAY_CORNER_RADIUS( 4 ),
-	.cursorPointer = true,
+	.cursor_pointer = true,
 	.color         = COLOR_ITEM
 };
 
 Clay_RectangleElementConfig set_information_button_hover_rect_config = {
 	.cornerRadius  = CLAY_CORNER_RADIUS( 4 ),
-	.cursorPointer = true,
+	.cursor_pointer = true,
 	.color         = COLOR_ITEM_HOVER
 };
 
@@ -241,5 +260,8 @@ Clay_LayoutConfig set_information_dropdown_layout_closed_config = {
 	.padding = {     0,     0 }
 };
 
+
+/*------- Floating Element Configs -------*/
+Clay_FloatingElementConfig floating_element_test_config;
 
 #endif

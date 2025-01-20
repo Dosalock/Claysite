@@ -14,6 +14,9 @@
 #include "configs.h"
 #include "helper.h"
 
+Clay_RectangleElementConfig *test_ptr;
+Clay_BorderElementConfig *test_border_ptr;
+
 void HeaderButton ( char *string )
 {
 	CLAY( CLAY_RECTANGLE( header_button_rect_config ),
@@ -26,9 +29,9 @@ void HeaderButton ( char *string )
 void SetInfoBody ( int index )
 {
 	CLAY( CLAY_IDI( "set_information_bar", index ),
-		  CLAY_RECTANGLE( set_information_bar_rect_open_config ),
+		  CLAY_RECTANGLE( *test_ptr ),
 		  CLAY_LAYOUT( set_information_bar_layout_config ),
-		  CLAY_BORDER( set_information_bar_border_config ) )
+		  CLAY_BORDER( *test_border_ptr ) )
 	{
 		// Left aligned and right aligned text with a spacer
 		CLAY_TEXT( CLAY_STRING( "SET TEXT" ), &btn_text_config );
@@ -82,6 +85,20 @@ void SetInfoBox ( int index )
 		{
 			// BodgeMargin( 0, 5, 0, 5, index, &SetInfoBody );
 			SetInfoBody( index );
+			if ( Clay_Hovered( ) )
+			{
+				// Clay_ElementData parent_data =
+				// Clay_GetElementData(Clay_GetElementIdWithIndex(CLAY_STRING("set_information_dropdown"),
+				// 2));
+
+
+			
+
+				CLAY( CLAY_RECTANGLE( {
+						.color = { 255, 255, 255, 100 }
+                } ),
+					  CLAY_FLOATING( floating_element_test_config ) );
+			}
 		}
 	}
 }

@@ -14,8 +14,8 @@
 
 /*-------------------------------- Defines ------------------------------*/
 
-int highlight_text_offset_x = 0;
-int highlight_text_offset_y = 0;
+float highlight_text_offset_x = 0.0f;
+float highlight_text_offset_y = 0.0f;
 #define GLOBAL_FONT_SCALING_FACTOR 1.0f
 /*--------------- Text filler ----------------*/
 const Clay_String cs = CLAY_STRING_CONST("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " \
@@ -73,8 +73,7 @@ Clay_TextElementConfig set_information_dropdown_text_config = {
 	.fontId    = 2,
 	.fontSize  = 18,
 	.textColor = COLOR_TEXT_2,
-	.wrapMode = CLAY_TEXT_WRAP_WORDS,
-	.lineHeight = 16
+	.wrapMode = CLAY_TEXT_WRAP_WORDS
 };
 
 

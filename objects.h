@@ -65,11 +65,12 @@ void SetInfoBody ( int index )
 		// Set text block dropdown, box, text, and border
 		CLAY( CLAY_IDI( "set_information_dropdown", index ),
 			  CLAY_LAYOUT( set_information_dropdown_layout_open_config ),
-			  CLAY_RECTANGLE( set_information_dropdown_rect_config ) )
+			  CLAY_RECTANGLE( set_information_dropdown_rect_config ),
+			  CLAY_TEXT(CLAY_STRING( "Tesing string to see if this is even possible" ), CLAY_TEXT_CONFIG(set_information_dropdown_text_config)) )
 		{
-			CLAY_TEXT(
-			  CLAY_STRING( impsum ),
-			  CLAY_TEXT_CONFIG( set_information_dropdown_text_config ) );
+			// CLAY_TEXT(
+			//   CLAY_STRING( impsum ),
+			//   CLAY_TEXT_CONFIG( set_information_dropdown_text_config ) );
 		}
 	}
 }

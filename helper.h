@@ -9,55 +9,16 @@ void ( *js_consoleLog )( Clay_String* message );
 
 #include "datastructures.h"
 
-/**
- * @brief Get the X and Y mulipliers for text highlighting based on mouse
- * posisition
- *
- * @param mouse_position_x - Mouse x position, usually retrieved from
- * UpdateDrawFrame
- * @param mouse_position_y - Mouse y position, usually retrieved from
- * UpdateDrawFrame
- * @param ID - Clay_ElementId of the parent element that houses the text
- *
- * @return Coordiante x and y as mulitpliers for the .offset in a Clay floating
- * element
- */
-Coordinate GetMouseHighlightCoordinates ( float mouse_position_x,
-										  float mouse_position_y,
-										  Clay_ElementId ID )
+float FloatModulo ( const float *value, const float *divisor )
 {
-	Clay_ElementData box_data = Clay_GetElementData( ID );
-	// Clay_LayoutElementHashMapItem* text_box_hash_map =
-	// 	Clay__GetHashMapItem( ID.id );
-	// Clay_TextElementConfig* text_to_measure_config =
-	// 	text_box_hash_map
-    //         ->layoutElement
-    //             ->elementConfigs
-    //                 .internalArray[0]
-    //                     .config
-	// 		                ->textElementConfig;
-	// char text_to_measure_sample =
-	// 	text_box_hash_map
-    //         ->layoutElement
-    //             ->childrenOrTextContent
-    //                 .textElementData
-	// 		            ->text.chars[0];
+	float local_value   = *value;
+	float local_divisor = *divisor;
 
-	// Clay_Dimensions c = Clay__MeasureText(
-	// 	&( Clay_String ) { .chars = &text_to_measure_sample, .length = 1 },
-	// 	text_to_measure_config );
-    Clay_Dimensions c = Clay__MeasureText(&CLAY_STRING("A"), &set_information_dropdown_text_config);
-	float c_x = ( c.width ) / 2.0f;
-	float c_y = ( c.height ) / 2.0f;
-
-	int32_t normalized_mouse_x =
-		( mouse_position_x - box_data.boundingBox.x ) - c_x;
-	int32_t normalized_mouse_y =
-		( mouse_position_y - box_data.boundingBox.y ) - c_y;
-	int16_t indexed_mouse_x = normalized_mouse_x / c.width;
-	int16_t indexed_mouse_y = normalized_mouse_y / c.height;
-
-	return ( Coordinate ) { .x = indexed_mouse_x, .y = indexed_mouse_y };
+	while ( local_value > local_divisor )
+	{
+		local_value -= local_divisor;
+	}
+	return local_value;
 }
 
 // Note this is exposed to C through C linkage
@@ -165,5 +126,72 @@ int float_to_string_wasm ( float f, char* buffer )
 	// Null termination
 	buffer[buffer_index] = '\0';
 	return buffer_index; // Return the length for convenience
+}
+
+inline const char* ElementTypeToString ( Clay__ElementConfigType config )
+{
+	switch ( config )
+	{
+		case CLAY__ELEMENT_CONFIG_TYPE_NONE:
+			return "None";
+		case CLAY__ELEMENT_CONFIG_TYPE_RECTANGLE:
+			return "Rectangle";
+		case CLAY__ELEMENT_CONFIG_TYPE_BORDER_CONTAINER:
+			return "Border";
+		case CLAY__ELEMENT_CONFIG_TYPE_FLOATING_CONTAINER:
+			return "Floating";
+		case CLAY__ELEMENT_CONFIG_TYPE_SCROLL_CONTAINER:
+			return "Scroll";
+		case CLAY__ELEMENT_CONFIG_TYPE_IMAGE:
+			return "Image";
+		case CLAY__ELEMENT_CONFIG_TYPE_TEXT:
+			return "Text";
+		case CLAY__ELEMENT_CONFIG_TYPE_CUSTOM:
+			return "Custom";
+		default:
+			return "ERR";
+	}
+}
+
+Clay_TextElementConfig* GetTextElementConfig ( Clay_ElementId ID )
+{
+	Clay_LayoutElementHashMapItem* text_box_hash_map =
+		Clay__GetHashMapItem( ID.id );
+	return text_box_hash_map->layoutElement->elementConfigs.internalArray
+		->config.textElementConfig;
+}
+
+/**
+ * @brief Get the X and Y mulipliers for text highlighting based on mouse
+ * posisition
+ *
+ * @param mouse_position_x - Mouse x position, usually retrieved from
+ * UpdateDrawFrame
+ * @param mouse_position_y - Mouse y position, usually retrieved from
+ * UpdateDrawFrame
+ * @param ID - Clay_ElementId of the parent element that houses the text
+ *
+ * @return Coordiante x and y as mulitpliers for the .offset in a Clay floating
+ * element
+ */
+Coordinate GetMouseHighlightCoordinates ( float mouse_position_x,
+										  float mouse_position_y,
+										  Textbox textbox )
+{
+	Clay_ElementData box_data = Clay_GetElementData( *textbox.parent_id );
+
+	Clay_Dimensions c = Clay__MeasureText(&textbox.selection, textbox.text_config);
+
+	float normalized_mouse_x = ( mouse_position_x - box_data.boundingBox.x );
+	float normalized_mouse_y = ( mouse_position_y - box_data.boundingBox.y );
+
+	// Better rounding
+	normalized_mouse_x -= (c.width / 2.0f);
+	normalized_mouse_y -= (c.height / 2.0f);
+
+	float indexed_mouse_x = normalized_mouse_x / ( c.width );
+	float indexed_mouse_y = normalized_mouse_y / ( c.height );
+
+	return ( Coordinate ) { .x = indexed_mouse_x, .y = indexed_mouse_y };
 }
 #endif

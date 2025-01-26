@@ -14,8 +14,13 @@
 #include "configs.h"
 #include "helper.h"
 
+bool pressed_last_frame = false;
+uint32_t input_index = 0;
+uint32_t input_index_substring_length = 0;
+
 Clay_RectangleElementConfig *test_ptr;
 Clay_BorderElementConfig *test_border_ptr;
+Textbox textbox = {};
 
 void HeaderButton ( char *string )
 {
@@ -66,7 +71,7 @@ void SetInfoBody ( int index )
 		CLAY( CLAY_IDI( "set_information_dropdown", index ),
 			  CLAY_LAYOUT( set_information_dropdown_layout_open_config ),
 			  CLAY_RECTANGLE( set_information_dropdown_rect_config ),
-			  CLAY_TEXT(CLAY_STRING( "Tesing string to see if this is even possible" ), CLAY_TEXT_CONFIG(set_information_dropdown_text_config)) )
+			  CLAY_TEXT(CLAY_STRING( "Testing string to see if this is even possible\0" ), CLAY_TEXT_CONFIG(set_information_dropdown_text_config)) )
 		{
 			// CLAY_TEXT(
 			//   CLAY_STRING( impsum ),
@@ -86,7 +91,7 @@ void SetInfoBox ( int index )
 		{
 			// BodgeMargin( 0, 5, 0, 5, index, &SetInfoBody );
 			SetInfoBody( index );
-			if ( Clay_Hovered( ) )
+			if (index == 2 )
 			{
 				// Clay_ElementData parent_data =
 				// Clay_GetElementData(Clay_GetElementIdWithIndex(CLAY_STRING("set_information_dropdown"),

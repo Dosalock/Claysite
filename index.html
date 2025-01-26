@@ -315,8 +315,17 @@
             if (event.key === "ArrowUp") {
                 window.arrowKeyUpPressedThisFrame = true;
             }
+            if (event.key == "ArrowLeft") {
+                window.arrowKeyLeftPressedThisFrame = true;
+            }
+            if (event.key == "ArrowRight") {
+                window.arrowKeyRightPressedThisFrame = true;
+            }
             if (event.key === "d") {
                 window.dKeyPressedThisFrame = true;
+            }
+            if (event.shiftKey == true) {
+                window.shiftKeyPressedThisFrame = true;
             }
         });
 
@@ -767,9 +776,9 @@
         previousFrameTime = currentTime;
         let activeRendererIndex = memoryDataView.getUint32(instance.exports.ACTIVE_RENDERER_INDEX.value, true);
         if (activeRendererIndex === 0) {
-            instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, 0, 0, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, 0, 0, window.dKeyPressedThisFrame, elapsed / 1000);
+            instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, window.mouseWheelXThisFrame, window.mouseWheelYThisFrame, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, window.arrowKeyDownPressedThisFrame, window.arrowKeyUpPressedThisFrame, window.arrowKeyLeftPressedThisFrame, window.arrowKeyRightPressedThisFrame, window.shiftKeyPressedThisFrame, window.dKeyPressedThisFrame, elapsed / 1000);
         } else {
-            instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, window.mouseWheelXThisFrame, window.mouseWheelYThisFrame, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, window.arrowKeyDownPressedThisFrame, window.arrowKeyUpPressedThisFrame, window.dKeyPressedThisFrame, elapsed / 1000);
+            instance.exports.UpdateDrawFrame(scratchSpaceAddress, window.innerWidth, window.innerHeight, window.mouseWheelXThisFrame, window.mouseWheelYThisFrame, window.mousePositionXThisFrame, window.mousePositionYThisFrame, window.touchDown, window.mouseDown, window.arrowKeyDownPressedThisFrame, window.arrowKeyUpPressedThisFrame, window.arrowKeyLeftPressedThisFrame, window.arrowKeyRightPressedThisFrame, window.shiftKeyPressedThisFrame, window.dKeyPressedThisFrame, elapsed / 1000);
         }
         let rendererChanged = activeRendererIndex !== window.previousActiveRendererIndex;
         switch (activeRendererIndex) {
@@ -795,6 +804,9 @@
         window.mouseDownThisFrame = false;
         window.arrowKeyUpPressedThisFrame = false;
         window.arrowKeyDownPressedThisFrame = false;
+        window.arrowKeyLeftPressedThisFrame = false;
+        window.arrowKeyRightPressedThisFrame = false;
+        window.shiftKeyPressedThisFrame = false;
         window.dKeyPressedThisFrame = false;
     }
     init();

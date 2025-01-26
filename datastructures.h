@@ -1,3 +1,6 @@
+#ifndef _DATASTRUCTURES_H__
+#define _DATASTRUCTURES_H__
+
 typedef struct{
 	float x;
 	float y;
@@ -5,8 +8,8 @@ typedef struct{
 
 
 typedef struct{
-	int32_t head;
-	int32_t tail;
+	uint32_t head;
+	uint32_t tail;
 	Clay_TextElementConfig *text_config;
 	Clay_ElementId *parent_id;
 	union {
@@ -16,3 +19,4 @@ typedef struct{
 		Clay_String after_selection;
 	};
 }Textbox;
+#endif

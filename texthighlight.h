@@ -14,7 +14,7 @@ void RenderHighlight ( Clay_ElementId parent_id,
 {
 	char string[]    = "Testing string to see if this is even possible\0";
 	char *string_ptr = string;
-	uint32_t substring_length = remote_substring_length + 1;
+	uint32_t substring_length = remote_substring_length;
 	uint32_t index            = remote_index;
 	uint32_t l_head           = index;
 	uint32_t l_tail           = index + substring_length;
@@ -28,7 +28,7 @@ void RenderHighlight ( Clay_ElementId parent_id,
 	Clay_String before = { .chars = string_ptr, .length = l_head};
 	consoleLogC( before );
 	consoleLogC( CLAY_STRING( "SELECTION;" ) );
-	Clay_String selection = { .chars  = ( string_ptr + l_head + 1 ),
+	Clay_String selection = { .chars  = ( string_ptr + l_head ),
 							  .length = l_tail - l_head };
 	consoleLogC( selection );
 	consoleLogC( CLAY_STRING( "AFTER" ) );
@@ -56,24 +56,21 @@ void RenderHighlight ( Clay_ElementId parent_id,
 	Clay_LayoutElementHashMapItem *parent_container =
 		Clay__GetHashMapItem( parent_id.id );
 
-	float one_character_width  = one_character.width / 2.0f;
-	float one_character_height = one_character.height / 2.0f;
-
 	// clang-format off
 	floating_element_test_config = ( Clay_FloatingElementConfig ) {
 		.parentId = parent_id.id,
 		.attachment = {.element = CLAY_ATTACH_POINT_LEFT_TOP, .parent = CLAY_ATTACH_POINT_LEFT_TOP},
 		.expand = { 
-			.width  = ( one_character_width * substring_length ),
-			.height = ( one_character_height ),
+			.width  = ( one_character.width * substring_length /2.0f ),
+			.height = ( one_character.height /2.0f ),
 		},
 		.zIndex     = 3,
 		
 		.pointerCaptureMode = CLAY_POINTER_CAPTURE_MODE_PASSTHROUGH,
 		.offset = { 
 			.x = (float)parent_container->layoutElement->layoutConfig->padding.left
-				 + (one_character_width) 
-				 + ((one_character_width) * ((float)input_index)*2.0f) ,
+				 + (one_character.width * input_index)
+				 + (one_character.width * substring_length/2.0f),
 			.y = textbox.text_config->fontSize   
 		}
 		// clang-format on
